@@ -22,7 +22,7 @@ public class FileStorageServiceImpl implements FileStorageService {
    // private final Path root = Paths.get("uploads");
    @Value("${app.upload.dir:${user.home}}")
    public String uploadDir;
-    private final Path root = Paths.get("/static/");
+    private final Path root = Paths.get("src/main/resources/static");
     private static final String CLASSPATH_RESOURCE_LOCATIONS = "classpath:/resources/";
 //
 //    @PostConstruct

@@ -15,7 +15,7 @@ class BulletinItem extends Component {
                         {this.props.item.title}
                     </Typography>
                     <Avatar variant="square" style={{height: 200, width: 450}}
-                            src={"http://localhost:8080/upload/" + this.props.item.image}
+                            src={"http://localhost:8080/" + this.props.item.image}
                     />
                     <Typography>
                         {this.props.item.description}

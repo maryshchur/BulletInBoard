@@ -26,8 +26,6 @@ import java.io.IOException;
 public class UserController {
     private UserService userService;
     private AuthenticationService authenticationService;
-    private String AUTHORIZATION_HEADER = "authorization";
-    private String AUTH_HEADER_PREFIX = "Bearer ";
 
     @Autowired
     public UserController(UserService userService,
@@ -47,7 +45,6 @@ public class UserController {
     public ResponseEntity<String> login(@RequestBody @Valid LoginedUserDto loginUser, HttpServletResponse response) {
 
         String s = authenticationService.loginUser(loginUser);
-       // response.setHeader(AUTHORIZATION_HEADER, AUTH_HEADER_PREFIX + s);
         return ResponseEntity.status(HttpStatus.OK).body(s);
     }
 

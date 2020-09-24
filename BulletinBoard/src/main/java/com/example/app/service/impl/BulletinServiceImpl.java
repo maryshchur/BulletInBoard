@@ -17,11 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static com.example.app.util.Pagination.validatePage;
 import static com.example.app.util.Pagination.validatePageSize;
 
@@ -53,12 +48,12 @@ public class BulletinServiceImpl implements BulletinService {
     @Transactional
     public void uploadPhoto(MultipartFile photo, Long id) {
         Bulletin bulletin = bulletinRepository
-                .findById(id).orElseThrow(() -> new NotFoundException("Bulletin ws not found"));
+                .findById(id).orElseThrow(() -> new NotFoundException("Bulletin was not found"));
 
         if (!photo.isEmpty()) {
-          fileStorageService.save(photo);
-                bulletin.setImage(photo.getOriginalFilename());
-                bulletinRepository.save(bulletin);
+            fileStorageService.save(photo);
+            bulletin.setImage(photo.getOriginalFilename());
+            bulletinRepository.save(bulletin);
 
         }
     }
@@ -66,7 +61,6 @@ public class BulletinServiceImpl implements BulletinService {
 
     @Override
     public Page<BulletinDto> getAll(Integer page, Integer pageSize) {
-                //.peek(x-> x.setImage(fileStorageService.load(x.getImage())))
         Pageable pageable = PageRequest.of(validatePage(page), validatePageSize(pageSize), Sort.Direction.DESC, "id");
         return bulletinRepository.findAll(pageable)
                 .map(bulletin -> modelMapper.map(bulletin, BulletinDto.class));
