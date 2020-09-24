@@ -14,10 +14,6 @@ const localStorageService = LocalSessionStorageService.getService();
 const style = {
     marginTop: 40
 };
-const formControl = {
-    marginTop: 15,
-    minWidth: 395,
-};
 
 class LoginForm extends Component {
 

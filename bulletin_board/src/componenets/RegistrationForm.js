@@ -29,8 +29,6 @@ class RegistrationForm extends Component {
         email: undefined,
         password: undefined,
         confirmationPassword: undefined,
-        showPassword: false,
-        showConfPassword: false,
         errorMessages: {}
     };
     isNotValid = () => {
@@ -101,14 +99,6 @@ class RegistrationForm extends Component {
                            placeholder="Password"
                            style={textFieldStyles}
                            onChange={this.onChangePassword}
-                           // endAdornment={
-                           //     <InputAdornment position="end">
-                           //         <IconButton
-                           //             onClick={this.handleClickShowPassword}>
-                           //             {this.state.showPassword ? <Visibility/> : <VisibilityOff/>}
-                           //         </IconButton>
-                           //     </InputAdornment>
-                           // }
                     />
                     {this.state.errorMessages["password"] !== undefined &&
                     <FormHelperText style={textFieldStyles}
@@ -126,14 +116,6 @@ class RegistrationForm extends Component {
                            onChange={this.onChangeConfirmationPassword}
                            helperText={this.state.errorMessages["confirmationPassword"]}
                            error={this.state.errorMessages["confirmationPassword"] !== undefined}
-                           // endAdornment={
-                           //     <InputAdornment position="end">
-                           //         <IconButton
-                           //             onClick={this.handleClickShowConfPassword}>
-                           //             {this.state.showConfPassword ? <Visibility/> : <VisibilityOff/>}
-                           //         </IconButton>
-                           //     </InputAdornment>
-                           // }
                     />
                     {this.state.errorMessages["confirmationPassword"] !== undefined &&
                     <FormHelperText style={textFieldStyles}

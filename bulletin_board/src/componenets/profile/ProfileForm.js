@@ -28,10 +28,6 @@ class ProfileForm extends Component {
         lastName: "",
         email: "",
         password: undefined,
-        errorMessage: null,
-        errorMessages: {},
-        err: undefined,
-        reLogin: '',
         openDialogChangeData: false,
         openDialogAddBulletin: false
     };
@@ -82,8 +78,6 @@ class ProfileForm extends Component {
                         style={style}
                     >
                         <CardContent>
-                            <CssBaseline/>
-                            {this.state.err && <Alert severity="error">{this.state.err}</Alert>}
                             <Grid container justify={"space-evenly"}>
                                 <Grid xl={12} xs={12}>
                                     <Typography variant="h3" component="h3" style={{marginTop: 10}}
