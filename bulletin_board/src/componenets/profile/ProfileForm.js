@@ -2,10 +2,9 @@ import axios from "../../utils/axios";
 import React, {Component} from "react";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import {Alert} from "@material-ui/lab";
 import Typography from "@material-ui/core/Typography";
 
-import {CssBaseline, Grid} from "@material-ui/core";
+import { Grid} from "@material-ui/core";
 import CreateBulletin from "../bulletin/CreateBulletin";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Dialog from "@material-ui/core/Dialog";
@@ -13,12 +12,13 @@ import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from '@material-ui/icons/Add';
 import EditProfile from "./EditProfile";
 import Button from "@material-ui/core/Button";
+import AllBulletin from "../AllBulletin";
 
 const style = {
     marginTop: 50,
-    height: 700,
     wight: 500
 };
+const itemsNumber = 2;
 
 class ProfileForm extends Component {
 
@@ -29,7 +29,12 @@ class ProfileForm extends Component {
         email: "",
         password: undefined,
         openDialogChangeData: false,
-        openDialogAddBulletin: false
+        openDialogAddBulletin: false,
+        bulletins: [],
+        activePage: 1,
+        totalItemsCount: 1,
+        totalPages: 0,
+        itemsCountPerPage: 0,
     };
 
     getData = () => {
@@ -50,8 +55,30 @@ class ProfileForm extends Component {
         })
     };
 
+    getAllUserBulletins = (pageNumber) => {
+        axios.get(`/profile/my-bulletins?page=${pageNumber}&pageSize=${itemsNumber}`).then(
+            response => {
+                let totalPages = response.data.totalPages;
+                let itemsCountPerPage = response.data.numberOfElements;
+                let totalItemsCount = response.data.totalElements;
+                let data = response.data.content;
+                this.setState({
+                    bulletins: data,
+                    totalPages: totalPages,
+                    itemsCountPerPage: itemsCountPerPage,
+                    totalItemsCount: totalItemsCount
+                })
+            }
+        )
+    };
+    handlePageChange = (event, pageNumber) => {
+        this.setState({activePage: pageNumber});
+        this.getAllUserBulletins(pageNumber)
+    };
+
     componentDidMount() {
         this.getData();
+        this.getAllUserBulletins(this.state.activePage)
     }
 
     handleOpenDialogChangeData = () => {
@@ -140,13 +167,24 @@ class ProfileForm extends Component {
                             >
                                 <DialogTitle id="responsive-dialog-title">Add bulletin</DialogTitle>
                                 <CreateBulletin handleClose={this.handleCloseDialogAddBulletin}
-                                             firstName={this.state.firstName}
-                                             lastName={this.state.lastName}
-                                             email={this.state.email}
-                                             password={this.state.password}
-                                             id={this.state.id}/>
+                                                firstName={this.state.firstName}
+                                                lastName={this.state.lastName}
+                                                email={this.state.email}
+                                                password={this.state.password}
+                                                id={this.state.id}/>
                             </Dialog>
                         </CardContent>
+                        <Typography variant="h5" color="textSecondary" component="p">
+                            My bulletins
+                        </Typography>
+                        <AllBulletin bulletins={this.state.bulletins}
+                                     showAuthor={false}
+                                     activepage={this.state.activePage}
+                                     totalPages={this.state.totalPages}
+                                     itemsCountPerPage={this.state.itemsCountPerPage}
+                                     totalItemsCount={this.state.totalItemsCount}
+                                     handlePageChange={this.handlePageChange}
+                        />
 
                     </Card>
                 </Grid>

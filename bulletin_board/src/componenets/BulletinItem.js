@@ -7,11 +7,10 @@ import Avatar from "@material-ui/core/Avatar";
 class BulletinItem extends Component {
 
     render() {
-        console.log(this.props.item.addedDate);
         return (
             <Card>
                 <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2" >
+                    <Typography gutterBottom variant="h5" component="h2">
                         {this.props.item.title}
                     </Typography>
                     <Avatar variant="square" style={{height: 200, width: 450}}
@@ -22,11 +21,12 @@ class BulletinItem extends Component {
                         {this.props.item.description}
                     </Typography>
                     <Typography>
-                        Added at  {this.props.item.addedDate}
+                        Added at {this.props.item.addedDate}
                     </Typography>
+                    {this.props.showAuthor &&
                     <Typography>
                         Author: {this.props.item.user.firstName} {this.props.item.user.lastName}
-                    </Typography>
+                    </Typography>}
                 </CardContent>
             </Card>
         )
