@@ -9,7 +9,6 @@ import com.example.app.service.BulletinService;
 import com.example.app.service.FileStorageService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,23 +26,15 @@ public class BulletinServiceImpl implements BulletinService {
     private UserRepository userRepository;
     private FileStorageService fileStorageService;
     private ModelMapper modelMapper;
-    @Value("${ENDPOINT_URL}")
-    private String endpointUrl;
+
 
     @Autowired
     public BulletinServiceImpl(BulletinRepository bulletinRepository,
-                               UserRepository userRepository,
+                               UserRepository userRepository, ModelMapper modelMapper,
                                FileStorageService fileStorageService) {
         this.bulletinRepository = bulletinRepository;
         this.userRepository = userRepository;
-        this.modelMapper =new ModelMapper();
-        this.modelMapper.typeMap(Bulletin.class, BulletinDto.class).setPostConverter(b ->
-        {
-            BulletinDto bb = b.getDestination();
-            bb.setImage(endpointUrl + b.getSource().getImage());
-            return bb;
-        });
-
+        this.modelMapper = modelMapper;
         this.fileStorageService = fileStorageService;
     }
 
@@ -63,10 +54,10 @@ public class BulletinServiceImpl implements BulletinService {
         bulletinRepository.save(bulletin);
     }
 
-    private Bulletin findById(Long id){
+    private Bulletin findById(Long id) {
         return bulletinRepository
                 .findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Bulletin with %d id does not exist",id)));
+                .orElseThrow(() -> new NotFoundException(String.format("Bulletin with %d id does not exist", id)));
     }
 
 
@@ -80,12 +71,12 @@ public class BulletinServiceImpl implements BulletinService {
 
     @Override
     public BulletinDto getById(Long id) {
-         return modelMapper.map(findById(id), BulletinDto.class);
+        return modelMapper.map(findById(id), BulletinDto.class);
     }
 
     @Override
-    public void delete(Long id){
-        Bulletin bulletin=findById(id);
+    public void delete(Long id) {
+        Bulletin bulletin = findById(id);
         fileStorageService.deleteFile(bulletin.getImage());
         bulletinRepository.deleteById(id);
     }

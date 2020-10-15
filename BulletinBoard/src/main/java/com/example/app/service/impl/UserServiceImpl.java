@@ -15,33 +15,34 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
-    private ModelMapper modelMapper = new ModelMapper();
+    private ModelMapper modelMapper;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
-           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public void register(UserDto userDto) {
         User user = modelMapper.map(userDto, User.class);
-       user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         saveOrUpdate(user);
     }
 
-    private void saveOrUpdate(User user){
+    private void saveOrUpdate(User user) {
         if (userRepository.save(user) == null) {
             throw new NotSavedException(String.format("User with %s email was not saved or updated", user.getEmail()));
         }
     }
 
     @Override
-    public void update(Long id, UserDto userDto){
-        User user=modelMapper.map(userDto,User.class);
+    public void update(Long id, UserDto userDto) {
+        User user = modelMapper.map(userDto, User.class);
         user.setId(id);
-        if(!getUser(user.getEmail()).getPassword().equals(user.getPassword())){
+        if (!getUser(user.getEmail()).getPassword().equals(user.getPassword())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         saveOrUpdate(user);
@@ -52,8 +53,6 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(userRepository.findUserByEmail(email).
                 orElseThrow(() -> new NotFoundException(String.format("User with %s email was not found", email))), UserDto.class);
     }
-
-
 
 
 }
