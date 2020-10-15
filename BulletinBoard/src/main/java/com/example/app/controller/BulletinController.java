@@ -1,6 +1,7 @@
 package com.example.app.controller;
 
 import com.example.app.dto.BulletinDto;
+import com.example.app.dto.UserDto;
 import com.example.app.security.UserPrincipal;
 import com.example.app.service.BulletinService;
 import io.swagger.annotations.ApiOperation;
@@ -63,5 +64,14 @@ public class BulletinController {
     public ResponseEntity deleteBulletin(@PathVariable Long id) {
         bulletinService.delete(id);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
+    @GetMapping("/profile/my-bulletins")
+    public ResponseEntity<Page<BulletinDto>> getAllUserBulletins(@RequestParam Optional<Integer> page,
+                                                       @RequestParam Optional<Integer> pageSize,
+            @ApiIgnore @AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(bulletinService.getAllByUser(page.orElseGet(() -> 1), pageSize.orElseGet(() -> 10),principal.getUsername()));
     }
 }

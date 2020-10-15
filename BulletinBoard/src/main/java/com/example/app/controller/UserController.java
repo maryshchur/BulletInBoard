@@ -61,4 +61,5 @@ public class UserController {
             @ApiIgnore @AuthenticationPrincipal UserPrincipal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(principal.getUsername()));
     }
+
 }

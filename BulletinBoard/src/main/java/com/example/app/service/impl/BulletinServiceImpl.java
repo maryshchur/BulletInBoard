@@ -2,6 +2,7 @@ package com.example.app.service.impl;
 
 import com.example.app.dto.BulletinDto;
 import com.example.app.entities.Bulletin;
+import com.example.app.entities.User;
 import com.example.app.exceptions.NotFoundException;
 import com.example.app.repository.BulletinRepository;
 import com.example.app.repository.UserRepository;
@@ -64,14 +65,21 @@ public class BulletinServiceImpl implements BulletinService {
     @Override
     public Page<BulletinDto> getAll(Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(validatePage(page), validatePageSize(pageSize), Sort.Direction.DESC, "id");
-        Page<BulletinDto> bulletinDto = bulletinRepository.findAll(pageable)
+        return bulletinRepository.findAll(pageable)
                 .map(bulletin -> modelMapper.map(bulletin, BulletinDto.class));
-        return bulletinDto;
     }
 
     @Override
     public BulletinDto getById(Long id) {
         return modelMapper.map(findById(id), BulletinDto.class);
+    }
+
+    @Override
+    public Page<BulletinDto> getAllByUser(Integer page, Integer pageSize,String email){
+        Pageable pageable = PageRequest.of(validatePage(page), validatePageSize(pageSize), Sort.Direction.DESC, "id");
+        User user = userRepository.findUserByEmail(email).get();
+        return bulletinRepository.findAllByUser(pageable,user)
+                .map(bulletin -> modelMapper.map(bulletin, BulletinDto.class));
     }
 
     @Override

@@ -14,4 +14,7 @@ public interface BulletinService {
     BulletinDto getById(Long id);
 
     void delete(Long id);
+
+    Page<BulletinDto> getAllByUser(Integer page, Integer pageSize,String email);
+
 }
