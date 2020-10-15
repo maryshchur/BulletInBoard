@@ -10,46 +10,48 @@ import IconButton from "@material-ui/core/IconButton";
 import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Alert from "@material-ui/lab/Alert";
+
 const textFieldStyles = {
     width: 300,
     minWidth: 100,
     maxWidth: 300
 };
-class CreateBulletin extends Component{
-    state={
-        title:undefined,
-        description:undefined,
+
+class CreateBulletin extends Component {
+    state = {
+        title: undefined,
+        description: undefined,
         id: undefined,
-        image:undefined,
+        image: undefined,
         err: undefined
-};
+    };
     isNotValid = () => {
         return (this.state.title === undefined ||
-            this.state.description === undefined);
+            this.state.description === undefined || this.state.image === undefined);
     };
-    saveBulletin=()=>{
+    saveBulletin = () => {
         let data = {};
         data.title = this.state.title;
         data.description = this.state.description;
-        axios.post("/create-bulletin",data).then(response=>{
-            this.setState({id:response.data},() => this.uploadImage());
+        axios.post("/create-bulletin", data).then(response => {
+            this.setState({id: response.data}, () => this.uploadImage());
         })
     };
-    uploadImage=()=>{
+    uploadImage = () => {
         const formData = new FormData();
         formData.append('file', this.state.image);
-        axios.put(`/${this.state.id}/upload-photo`,formData,{
+        axios.put(`/${this.state.id}/upload-photo`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
-        }).then(response=>{
+        }).then(response => {
             this.props.handleClose();
         })
     };
     checkMimeType = (event) => {
         let files = event.target.files[0];
         if ((files.type !== 'image/png') && (files.type !== 'image/jpeg') && (files.type !== 'image/gif')) {
-            this.setState({err: files.type+' is not a supported format'});
+            this.setState({err: files.type + ' is not a supported format'});
         } else {
             this.setState({err: ('')});
             return true;
@@ -72,7 +74,8 @@ class CreateBulletin extends Component{
         if (this.checkMimeType(event) && (this.checkFileSize(event))) {
             this.setState({
                 image: event.target.files[0]
-            })}
+            })
+        }
     };
     onChangeTitle = (event) => {
         this.setState({title: event.target.value});
@@ -80,6 +83,7 @@ class CreateBulletin extends Component{
     onChangeDescription = (event) => {
         this.setState({description: event.target.value});
     };
+
     render() {
         return (
             <div>
@@ -109,7 +113,7 @@ class CreateBulletin extends Component{
                     <Button autoFocus onClick={this.props.handleClose} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={this.saveBulletin}  disabled={this.isNotValid()} color="primary">
+                    <Button onClick={this.saveBulletin} disabled={this.isNotValid()} color="primary">
                         Save
                     </Button>
                 </DialogActions>
@@ -117,4 +121,5 @@ class CreateBulletin extends Component{
         );
     }
 }
+
 export default CreateBulletin;
