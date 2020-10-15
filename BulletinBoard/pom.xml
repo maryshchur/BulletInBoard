@@ -32,12 +32,6 @@
             <artifactId>spring-boot-starter-security</artifactId>
             <version>2.2.6.RELEASE</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.security</groupId>-->
-<!--            <artifactId>spring-security-core</artifactId>-->
-<!--            <version>5.2.1.RELEASE</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
@@ -90,10 +84,11 @@
             <version>2.9.2</version>
         </dependency>
         <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.2</version>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.11.880</version>
         </dependency>
+
 
     </dependencies>
 

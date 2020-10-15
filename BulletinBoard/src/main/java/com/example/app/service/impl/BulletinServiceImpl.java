@@ -9,6 +9,7 @@ import com.example.app.service.BulletinService;
 import com.example.app.service.FileStorageService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,9 @@ public class BulletinServiceImpl implements BulletinService {
     private BulletinRepository bulletinRepository;
     private UserRepository userRepository;
     private FileStorageService fileStorageService;
-    private ModelMapper modelMapper = new ModelMapper();
+    private ModelMapper modelMapper;
+    @Value("${ENDPOINT_URL}")
+    private String endpointUrl;
 
     @Autowired
     public BulletinServiceImpl(BulletinRepository bulletinRepository,
@@ -33,6 +36,14 @@ public class BulletinServiceImpl implements BulletinService {
                                FileStorageService fileStorageService) {
         this.bulletinRepository = bulletinRepository;
         this.userRepository = userRepository;
+        this.modelMapper =new ModelMapper();
+        this.modelMapper.typeMap(Bulletin.class, BulletinDto.class).setPostConverter(b ->
+        {
+            BulletinDto bb = b.getDestination();
+            bb.setImage(endpointUrl + b.getSource().getImage());
+            return bb;
+        });
+
         this.fileStorageService = fileStorageService;
     }
 
@@ -49,29 +60,24 @@ public class BulletinServiceImpl implements BulletinService {
     public void uploadPhoto(MultipartFile photo, Long id) {
         Bulletin bulletin = bulletinRepository
                 .findById(id).orElseThrow(() -> new NotFoundException("Bulletin was not found"));
-
-        if (!photo.isEmpty()) {
-            fileStorageService.save(photo);
-            bulletin.setImage(photo.getOriginalFilename());
-            bulletinRepository.save(bulletin);
-
-        }
+        bulletin.setImage(fileStorageService.uploadFile(photo));
+        bulletinRepository.save(bulletin);
     }
 
 
     @Override
     public Page<BulletinDto> getAll(Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(validatePage(page), validatePageSize(pageSize), Sort.Direction.DESC, "id");
-        return bulletinRepository.findAll(pageable)
+        Page<BulletinDto> bulletinDto = bulletinRepository.findAll(pageable)
                 .map(bulletin -> modelMapper.map(bulletin, BulletinDto.class));
-
+        return bulletinDto;
     }
 
     @Override
     public BulletinDto getById(Long id) {
         Bulletin bulletin = bulletinRepository.findById(id).orElseThrow(() -> new NotFoundException("Bulletin with current id does not exist"));
         BulletinDto bulletinDto = modelMapper.map(bulletin, BulletinDto.class);
-        bulletinDto.setImage(fileStorageService.load(bulletin.getImage()));
+        bulletinDto.setImage(endpointUrl + bulletinDto.getImage());
         return bulletinDto;
     }
 }

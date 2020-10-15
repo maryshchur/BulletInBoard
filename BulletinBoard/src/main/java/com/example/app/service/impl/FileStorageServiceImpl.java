@@ -1,70 +1,72 @@
 package com.example.app.service.impl;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.app.service.FileStorageService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.io.*;
+import java.util.UUID;
 
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
-   // private final Path root = Paths.get("uploads");
-   @Value("${app.upload.dir:${user.home}}")
-   public String uploadDir;
-    private final Path root = Paths.get("src/main/resources/static");
-    private static final String CLASSPATH_RESOURCE_LOCATIONS = "classpath:/resources/";
-//
-//    @PostConstruct
-//    public void init() {
-//        try {
-//            if (!Files.exists(root)) {
-//                Files.createDirectory(root);
-//            }
-//        } catch (IOException e) {
-//            throw new RuntimeException("Could not initialize folder for upload!");
-//        }
-//    }
+    private AmazonS3 s3client;
+    @Value("${BUCKET_NAME}")
+    private String bucketName;
+    @Value("${ACCESS_KEY}")
+    private String accessKey;
+    @Value("${SECRET_ACCESS_KEY}")
+    private String secretAccessKey;
+    @Value("${ENDPOINT_URL}")
+    private String endpointUrl;
 
-    @Override
-    public void save(MultipartFile file) {
-        try {
-//            Path copyLocation = Paths
-//                    .get(uploadDir + File.separator + StringUtils.cleanPath(file.getOriginalFilename()));
-//            Files.copy(file.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
-            Files.copy(file.getInputStream(), root.resolve(file.getOriginalFilename()));
+    @PostConstruct
+    private void initializeAmazon() {
+        AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretAccessKey);
+        s3client = AmazonS3ClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withRegion(Regions.EU_CENTRAL_1).build();
+    }
 
-        } catch (Exception e) {
-            throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
+    private File convertMultipartToFile(MultipartFile multipartFile) throws IOException {
+        File file = new File(multipartFile.getOriginalFilename());
+        try(OutputStream outputStream = new FileOutputStream(file)) {
+            outputStream.write(multipartFile.getBytes());
         }
+        return file;
+    }
 
+    private String generateFileName() {
+        return UUID.randomUUID().toString();
+    }
+
+    private void uploadFileToS3(String fileName, File file) {
+        s3client.putObject(new PutObjectRequest(bucketName, fileName, file)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
     }
 
     @Override
-    public String load(String filename) {
-//        try {
-////            Path file = root.resolve(filename);
-////            Resource resource = new UrlResource(file.toUri());
-////
-////            if (resource.exists() || resource.isReadable()) {
-////                return resource.getURL().toString();
-////            } else {
-////                throw new RuntimeException("Could not read the file!");
-////            }
-//            return FileStorageServiceImpl.class.getResource("/static/"+filename).getFile();
-//        } catch (Exception e) {
-//            throw new RuntimeException("Error: " + e.getMessage());
-//        }
-        return filename;
+    @Transactional
+    public String uploadFile(MultipartFile multipartFile){
+        String fileName = "";
+        try {
+            fileName = generateFileName();
+            uploadFileToS3(fileName, convertMultipartToFile(multipartFile));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fileName;
     }
+
+
 }

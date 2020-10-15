@@ -31,7 +31,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtAuthenticationEntryPoint unauthorizedHandler;
 
     @Autowired
-    public WebSecurityConfig(TokenManagementService tokenManagementService, UserPrincipalDetailService userPrincipalDetailsService,
+    public WebSecurityConfig(TokenManagementService tokenManagementService,
+                             UserPrincipalDetailService userPrincipalDetailsService,
                              JwtAuthenticationEntryPoint unauthorizedHandler) {
         this.tokenManagementService = tokenManagementService;
         this.userPrincipalDetailsService = userPrincipalDetailsService;
@@ -49,14 +50,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .csrf().disable()
-                .exceptionHandling()
-                .authenticationEntryPoint(unauthorizedHandler)
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and()
                 .authorizeRequests()
-                .antMatchers(AUTH_WHITELIST)
-                .permitAll()
-                .anyRequest()
-                .authenticated();
+                .antMatchers(AUTH_WHITELIST).permitAll()
+                .anyRequest().authenticated();
         http
                 .addFilterBefore(new JwtAuthorizationFilter(tokenManagementService), UsernamePasswordAuthenticationFilter.class);
 
@@ -65,6 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers("/v2/api-docs",
+                "/resources/**",
                 "/configuration/ui",
                 "/swagger-resources/**",
                 "/configuration/security",
