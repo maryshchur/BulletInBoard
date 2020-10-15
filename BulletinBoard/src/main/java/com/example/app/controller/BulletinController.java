@@ -57,4 +57,11 @@ public class BulletinController {
         bulletinService.uploadPhoto(photo, id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
+    @DeleteMapping("/{id}/")
+    public ResponseEntity deleteBulletin(@PathVariable Long id) {
+        bulletinService.delete(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

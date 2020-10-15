@@ -58,10 +58,15 @@ public class BulletinServiceImpl implements BulletinService {
     @Override
     @Transactional
     public void uploadPhoto(MultipartFile photo, Long id) {
-        Bulletin bulletin = bulletinRepository
-                .findById(id).orElseThrow(() -> new NotFoundException("Bulletin was not found"));
+        Bulletin bulletin = findById(id);
         bulletin.setImage(fileStorageService.uploadFile(photo));
         bulletinRepository.save(bulletin);
+    }
+
+    private Bulletin findById(Long id){
+        return bulletinRepository
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Bulletin with %d id does not exist",id)));
     }
 
 
@@ -75,9 +80,13 @@ public class BulletinServiceImpl implements BulletinService {
 
     @Override
     public BulletinDto getById(Long id) {
-        Bulletin bulletin = bulletinRepository.findById(id).orElseThrow(() -> new NotFoundException("Bulletin with current id does not exist"));
-        BulletinDto bulletinDto = modelMapper.map(bulletin, BulletinDto.class);
-        bulletinDto.setImage(endpointUrl + bulletinDto.getImage());
-        return bulletinDto;
+         return modelMapper.map(findById(id), BulletinDto.class);
+    }
+
+    @Override
+    public void delete(Long id){
+        Bulletin bulletin=findById(id);
+        fileStorageService.deleteFile(bulletin.getImage());
+        bulletinRepository.deleteById(id);
     }
 }

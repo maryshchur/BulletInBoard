@@ -68,5 +68,8 @@ public class FileStorageServiceImpl implements FileStorageService {
         return fileName;
     }
 
-
+    @Override
+    public void deleteFile(String fileName) {
+        s3client.deleteObject(bucketName, fileName);
+    }
 }

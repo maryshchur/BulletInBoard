@@ -6,7 +6,6 @@ import com.example.app.exceptions.BadCredentialException;
 import com.example.app.repository.UserRepository;
 import com.example.app.security.config.WebSecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -33,8 +32,8 @@ public class AuthenticationService {
         Optional<User> user = userRepository.findUserByEmail(loginUser.getEmail());
         PasswordEncoder passwordEncoder = webSecurityConfig.passwordEncoder();
         if (passwordEncoder.matches(loginUser.getPassword(),
-                user.orElseThrow(()->
-                        new BadCredentialException("User with this email does not exist"))
+                user.orElseThrow(() ->
+                        new BadCredentialException(String.format("User with %s email does not exist", loginUser.getEmail())))
                         .getPassword())) {
             return tokenManagementService.generateTokenPair(loginUser.getEmail());
         } else {
