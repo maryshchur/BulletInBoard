@@ -1,7 +1,6 @@
 package com.example.app.controller;
 
 import com.example.app.dto.BulletinDto;
-import com.example.app.dto.UserDto;
 import com.example.app.security.UserPrincipal;
 import com.example.app.service.BulletinService;
 import io.swagger.annotations.ApiOperation;
@@ -16,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -69,9 +67,17 @@ public class BulletinController {
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @GetMapping("/profile/my-bulletins")
     public ResponseEntity<Page<BulletinDto>> getAllUserBulletins(@RequestParam Optional<Integer> page,
-                                                       @RequestParam Optional<Integer> pageSize,
-            @ApiIgnore @AuthenticationPrincipal UserPrincipal principal) {
+                                                                 @RequestParam Optional<Integer> pageSize,
+                                                                 @ApiIgnore @AuthenticationPrincipal UserPrincipal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(bulletinService.getAllByUser(page.orElseGet(() -> 1), pageSize.orElseGet(() -> 10),principal.getUsername()));
+                .body(bulletinService.getAllByUser(page.orElseGet(() -> 1), pageSize.orElseGet(() -> 10), principal.getUsername()));
+    }
+
+    @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
+    @GetMapping("{id}/profile")
+    public ResponseEntity<Page<BulletinDto>> getAllUserBulletinsById(@PathVariable Long id, @RequestParam Optional<Integer> page,
+                                                                     @RequestParam Optional<Integer> pageSize) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(bulletinService.getAllByUserId(id,page.orElseGet(() -> 1), pageSize.orElseGet(() -> 10)));
     }
 }

@@ -17,4 +17,6 @@ public interface BulletinService {
 
     Page<BulletinDto> getAllByUser(Integer page, Integer pageSize,String email);
 
+    Page<BulletinDto> getAllByUserId(Long id,Integer page, Integer pageSize);
+
 }

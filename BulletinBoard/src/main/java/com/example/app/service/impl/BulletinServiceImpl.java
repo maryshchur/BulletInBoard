@@ -83,6 +83,14 @@ public class BulletinServiceImpl implements BulletinService {
     }
 
     @Override
+    public Page<BulletinDto> getAllByUserId(Long id,Integer page, Integer pageSize){
+        Pageable pageable = PageRequest.of(validatePage(page), validatePageSize(pageSize), Sort.Direction.DESC, "id");
+        User user = userRepository.findUserById(id).get();
+        return bulletinRepository.findAllByUser(pageable,user)
+                .map(bulletin -> modelMapper.map(bulletin, BulletinDto.class));
+    };
+
+    @Override
     public void delete(Long id) {
         Bulletin bulletin = findById(id);
         fileStorageService.deleteFile(bulletin.getImage());

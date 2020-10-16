@@ -1,13 +1,13 @@
 package com.example.app.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -15,7 +15,8 @@ import java.util.List;
 @DynamicUpdate
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@EqualsAndHashCode(exclude = {"subscribers", "subscriptions"})
+@ToString(exclude = {"subscribers", "subscriptions","password"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,16 +25,24 @@ public class User {
     @Column(nullable = false, length = 50)
     private String firstName;
 
-    @Column(nullable = false,length = 50)
+    @Column(nullable = false, length = 50)
     private String lastName;
 
-    @Column(nullable = false,unique = true, length = 50)
+    @Column(nullable = false, unique = true, length = 50)
     private String email;
 
-    @ToString.Exclude
     @Column(nullable = false)
     private String password;
-//    @ToString.Exclude
-//    @OneToMany(mappedBy = "user", orphanRemoval = true)
-//    private List<Bulletin> bulletins;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_subscriptions",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "subscriber_id", referencedColumnName = "id")}
+    )
+    private Set<User> subscribers = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY,mappedBy = "subscribers")
+    private Set<User> subscriptions = new HashSet<>();
+
 }

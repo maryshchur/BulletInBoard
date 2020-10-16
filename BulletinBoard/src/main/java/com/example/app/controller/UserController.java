@@ -17,7 +17,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
+import java.util.Set;
 
 @RestController
 @Validated
@@ -62,4 +62,42 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(principal.getUsername()));
     }
 
+    @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
+    @GetMapping("/profile/subscribe/{userId}")
+    public ResponseEntity changeSubscription(@AuthenticationPrincipal @ApiIgnore UserPrincipal principal,
+                                    @PathVariable Long userId){
+        if(!principal.getUser().getId().equals(userId)){
+            userService.subscribe(principal.getUsername(),userId);
+        }
+        return ResponseEntity.status(HttpStatus.OK).build();
+
+    }
+
+    @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
+    @GetMapping("/profile/subscribers/{id}")
+    public ResponseEntity<Set<UserDto>> getSubscribers(@AuthenticationPrincipal @ApiIgnore UserPrincipal principal,
+                                                           @PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getSubscribers(id));
+    }
+    @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
+    @GetMapping("/profile/subscription/{id}")
+    public ResponseEntity<Set<UserDto>> getSubscriptions(@AuthenticationPrincipal @ApiIgnore UserPrincipal principal,
+                                             @PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getSubscriptions(id));
+
+    }
+
+    @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
+    @GetMapping("/profile/subscribers")
+    public ResponseEntity<Set<UserDto>> getSubscribersForCurrentUser(@AuthenticationPrincipal @ApiIgnore UserPrincipal principal
+                                                    ){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getSubscribers(principal.getUser().getId()));
+    }
+    @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
+    @GetMapping("/profile/subscription ")
+    public ResponseEntity<Set<UserDto>> getSubscriptionsForCurrentUser(@AuthenticationPrincipal @ApiIgnore UserPrincipal principal
+                                                        ){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getSubscriptions(principal.getUser().getId()));
+
+    }
 }
