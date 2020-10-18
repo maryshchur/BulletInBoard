@@ -59,11 +59,17 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<UserDto> getProfileData(
             @ApiIgnore @AuthenticationPrincipal UserPrincipal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(principal.getUsername()));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(principal.getUser().getId()));
     }
 
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
-    @GetMapping("/profile/subscribe/{userId}")
+    @GetMapping("/profile/user/{id}")
+    public ResponseEntity<UserDto> getUserProfileData(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(id));
+    }
+
+    @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
+    @PutMapping("/profile/subscribe/{userId}")
     public ResponseEntity changeSubscription(@AuthenticationPrincipal @ApiIgnore UserPrincipal principal,
                                     @PathVariable Long userId){
         if(!principal.getUser().getId().equals(userId)){

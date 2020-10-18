@@ -1,6 +1,5 @@
 package com.example.app.dto;
 
-import com.example.app.entities.User;
 import lombok.Data;
 import java.time.LocalDateTime;
 @Data
@@ -13,5 +12,5 @@ public class BulletinDto {
 
     private LocalDateTime addedDate;
 
-    private User user;
+    private UserInfoDto user;
 }

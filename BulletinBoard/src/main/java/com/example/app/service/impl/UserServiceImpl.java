@@ -46,15 +46,15 @@ public class UserServiceImpl implements UserService {
     public void update(Long id, UserDto userDto) {
         User user = modelMapper.map(userDto, User.class);
         user.setId(id);
-        if (!getUser(user.getEmail()).getPassword().equals(user.getPassword())) {
+        if (!getUser(user.getId()).getPassword().equals(user.getPassword())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         saveOrUpdate(user);
     }
 
     @Override
-    public UserDto getUser(String email) {
-        return modelMapper.map(findByEmail(email), UserDto.class);
+    public UserDto getUser(Long id) {
+        return modelMapper.map(findById(id), UserDto.class);
     }
 
 
@@ -79,7 +79,6 @@ public class UserServiceImpl implements UserService {
             subscribers.add(newSubscriber);
         }
         userRepository.save(user);
-
     }
 
     @Override

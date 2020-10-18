@@ -1,11 +1,16 @@
 package com.example.app.config;
 
 import com.example.app.dto.BulletinDto;
+import com.example.app.dto.UserDto;
 import com.example.app.entities.Bulletin;
+import com.example.app.entities.User;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.stream.Collectors;
 
 @Configuration
 public class AppConfig {
@@ -20,6 +25,13 @@ public class AppConfig {
             BulletinDto bulletinDto = context.getDestination();
             bulletinDto.setImage(endpointUrl + context.getSource().getImage());
             return bulletinDto;
+        });
+        modelMapper.typeMap(User.class, UserDto.class).setPostConverter(context ->
+        {
+            UserDto userDto = context.getDestination();
+            userDto.setAmountOfSubscribers(context.getSource().getSubscribers().size());
+            userDto.setAmountOfSubscriptions(context.getSource().getSubscriptions().size());
+            return userDto;
         });
         return modelMapper;
     }
