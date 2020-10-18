@@ -1,5 +1,6 @@
 package com.example.app.controller;
 
+import com.example.app.dto.AnotherUserProfileDto;
 import com.example.app.dto.AuthenticationDetailsDto;
 import com.example.app.dto.LoginedUserDto;
 import com.example.app.dto.UserDto;
@@ -63,8 +64,8 @@ public class UserController {
 
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @GetMapping("/profile/user/{id}")
-    public ResponseEntity<UserDto> getUserProfileData(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(id));
+    public ResponseEntity<AnotherUserProfileDto> getUserProfileData(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getAnotherUser(id));
     }
 
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})

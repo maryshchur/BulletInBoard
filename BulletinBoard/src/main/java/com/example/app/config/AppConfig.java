@@ -1,5 +1,6 @@
 package com.example.app.config;
 
+import com.example.app.dto.AnotherUserProfileDto;
 import com.example.app.dto.BulletinDto;
 import com.example.app.dto.UserDto;
 import com.example.app.entities.Bulletin;
@@ -26,13 +27,13 @@ public class AppConfig {
             bulletinDto.setImage(endpointUrl + context.getSource().getImage());
             return bulletinDto;
         });
-        modelMapper.typeMap(User.class, UserDto.class).setPostConverter(context ->
+        modelMapper.typeMap(User.class, AnotherUserProfileDto.class).setPostConverter(context ->
         {
-            UserDto userDto = context.getDestination();
+            AnotherUserProfileDto userDto = context.getDestination();
             userDto.setAmountOfSubscribers(context.getSource().getSubscribers().size());
             userDto.setAmountOfSubscriptions(context.getSource().getSubscriptions().size());
             return userDto;
-        });
+        }).include(UserDto.class);
         return modelMapper;
     }
 }

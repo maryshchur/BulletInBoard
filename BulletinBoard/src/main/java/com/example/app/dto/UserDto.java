@@ -1,6 +1,5 @@
 package com.example.app.dto;
 
-import com.example.app.entities.User;
 import com.example.app.util.validation.EmailExist;
 import lombok.Data;
 
@@ -8,7 +7,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.util.Set;
 
 @Data
 public class UserDto {

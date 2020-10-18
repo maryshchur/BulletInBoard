@@ -1,5 +1,6 @@
 package com.example.app.service.impl;
 
+import com.example.app.dto.AnotherUserProfileDto;
 import com.example.app.dto.UserDto;
 import com.example.app.entities.Bulletin;
 import com.example.app.entities.User;
@@ -9,9 +10,11 @@ import com.example.app.repository.UserRepository;
 import com.example.app.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,6 +60,20 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(findById(id), UserDto.class);
     }
 
+    @Override
+    public AnotherUserProfileDto getAnotherUser(Long id) {
+        User user = findById(id);
+        AnotherUserProfileDto profileDto = modelMapper.map(user,AnotherUserProfileDto.class);
+        profileDto.setCurrentUserSubscriber(isAlreadySubscribed(user));
+        return profileDto;
+    }
+
+    private boolean isAlreadySubscribed(User user){
+        Principal principal = SecurityContextHolder.getContext().getAuthentication();
+        if (user.getSubscribers().contains(findByEmail(principal.getName()))){
+            return true;
+        } else return false;
+    }
 
     private User findByEmail(String email) {
         return userRepository.findUserByEmail(email).
