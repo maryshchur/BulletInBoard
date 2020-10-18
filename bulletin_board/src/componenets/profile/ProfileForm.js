@@ -1,10 +1,9 @@
 import axios from "../../utils/axios";
-import React, {Component} from "react";
+import React, {Component, useCallback} from "react";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-
-import { Grid} from "@material-ui/core";
+import {Grid} from "@material-ui/core";
 import CreateBulletin from "../bulletin/CreateBulletin";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Dialog from "@material-ui/core/Dialog";
@@ -13,12 +12,23 @@ import AddIcon from '@material-ui/icons/Add';
 import EditProfile from "./EditProfile";
 import Button from "@material-ui/core/Button";
 import AllBulletin from "../AllBulletin";
+import {matchPath} from "react-router";
 
 const style = {
     marginTop: 50,
     wight: 500
 };
 const itemsNumber = 2;
+let isMyProfilePage = window.location.pathname === "/profile";
+let uriForGetBulletins;
+let uriForProfileData;
+let qqq = 1;
+
+const match = matchPath("/profile", {
+    path: `/profile/${qqq}`,
+    exact: true,
+    strict: false
+});
 
 class ProfileForm extends Component {
 
@@ -28,9 +38,11 @@ class ProfileForm extends Component {
         lastName: "",
         email: "",
         password: undefined,
+        amountOfSubscribers: undefined,
+        amountOfSubscriptions: undefined,
         openDialogChangeData: false,
         openDialogAddBulletin: false,
-        bulletins: [],
+        bulletins: null,
         activePage: 1,
         totalItemsCount: 1,
         totalPages: 0,
@@ -38,7 +50,7 @@ class ProfileForm extends Component {
     };
 
     getData = () => {
-        axios.get(`/profile`).then(
+        axios.get(`${uriForProfileData}`).then(
             response => {
                 console.log(response.data);
                 let data = response.data;
@@ -47,27 +59,29 @@ class ProfileForm extends Component {
                     firstName: data.firstName,
                     lastName: data.lastName,
                     email: data.email,
-                    password: data.password
+                    password: data.password,
+                    amountOfSubscribers: data.amountOfSubscribers,
+                    amountOfSubscriptions: data.amountOfSubscriptions,
                 })
             }).catch(error => {
-            console.dir(error.response.data);
+            console.dir(error.response);
 
         })
     };
 
     getAllUserBulletins = (pageNumber) => {
-        axios.get(`/profile/my-bulletins?page=${pageNumber}&pageSize=${itemsNumber}`).then(
+        axios.get(`${uriForGetBulletins}?page=${pageNumber}&pageSize=${itemsNumber}`).then(
             response => {
                 let totalPages = response.data.totalPages;
                 let itemsCountPerPage = response.data.numberOfElements;
                 let totalItemsCount = response.data.totalElements;
-                let data = response.data.content;
+                let dat = response.data.content;
                 this.setState({
-                    bulletins: data,
+                    bulletins: dat,
                     totalPages: totalPages,
                     itemsCountPerPage: itemsCountPerPage,
                     totalItemsCount: totalItemsCount
-                })
+                });
             }
         )
     };
@@ -76,13 +90,23 @@ class ProfileForm extends Component {
         this.getAllUserBulletins(pageNumber)
     };
 
+    rightURI = () => {
+        if (isMyProfilePage) {
+            uriForGetBulletins = "/profile/my-bulletins";
+            uriForProfileData = "/profile";
+        } else {
+            uriForGetBulletins = `/${this.props.match.params.id}/profile`;
+            uriForProfileData = `/profile/user/${this.props.match.params.id}`;
+        }
+    };
+
     componentDidMount() {
+        this.rightURI();
         this.getData();
-        this.getAllUserBulletins(this.state.activePage)
+        this.getAllUserBulletins(this.state.activePage);
     }
 
     handleOpenDialogChangeData = () => {
-        console.log(this.state.firstName);
         this.setState({openDialogChangeData: true});
     };
     handleCloseDialogChangeData = () => {
@@ -95,8 +119,85 @@ class ProfileForm extends Component {
     handleCloseDialogAddBulletin = () => {
         this.setState({openDialogAddBulletin: false});
     };
+    subscribe = () => {
+        axios.put(`/profile/subscribe/${this.state.id}`).then(response => {
+            this.getData();
+        });
+    };
+
 
     render() {
+        let data;
+        const ifAnoutherUserProfile = (
+            <div>
+                <Button
+                    align={"left"}
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    style={{
+                        marginRight: "10px"
+                    }}
+                    onClick={this.subscribe}
+                >
+                    Subscribe</Button>
+            </div>
+        );
+        const ifOwnProfile = (
+            <div>
+                <Button
+                    align={"left"}
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    style={{
+                        marginRight: "10px"
+                    }}
+                    onClick={this.handleOpenDialogChangeData}
+                    startIcon={<EditIcon/>}>
+                    Edit profile</Button>
+                <Dialog
+                    open={this.state.openDialogChangeData}
+                    onClose={this.handleCloseDialogChangeData}
+                    aria-labelledby="responsive-dialog-title"
+                >
+                    <DialogTitle id="responsive-dialog-title">Change profile data</DialogTitle>
+                    <EditProfile handleClose={this.handleCloseDialogChangeData}
+                                 firstName={this.state.firstName}
+                                 lastName={this.state.lastName}
+                                 email={this.state.email}
+                                 password={this.state.password}
+                                 id={this.state.id}/>
+                </Dialog>
+                <Button
+                    align={"left"}
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    style={{
+                        marginRight: "10px"
+                    }}
+                    onClick={this.handleOpenDialogAddBulletin}
+                    startIcon={<AddIcon/>}>
+                    Add bulletin</Button>
+                <Dialog
+                    open={this.state.openDialogAddBulletin}
+                    onClose={this.handleCloseDialogAddBulletin}
+                    aria-labelledby="responsive-dialog-title"
+                >
+                    <DialogTitle id="responsive-dialog-title">Add bulletin</DialogTitle>
+                    <CreateBulletin handleClose={this.handleCloseDialogAddBulletin}
+                                    firstName={this.state.firstName}
+                                    lastName={this.state.lastName}
+                                    email={this.state.email}
+                                    password={this.state.password}
+                                    id={this.state.id}/>
+                </Dialog>
+            </div>
+        );
+        if (isMyProfilePage)
+            data = ifOwnProfile;
+        else data = ifAnoutherUserProfile;
         return (
             <Grid container>
                 <Grid item xs={1}/>
@@ -123,68 +224,34 @@ class ProfileForm extends Component {
                                     >
                                         {this.state.email}
                                     </Typography>
+                                    <Typography variant="h5" color="textSecondary" component="p"
+                                                style={{
+                                                    position: "relative",
+                                                    left: "25px"
+                                                }}
+                                    >
+                                        Subscribers: {this.state.amountOfSubscribers}
+                                        Subscription: {this.state.amountOfSubscriptions}
+                                    </Typography>
+                                    {data}
                                 </Grid>
                             </Grid>
-                            <Button
-                                align={"left"}
-                                variant="contained"
-                                color="primary"
-                                size="small"
-                                style={{
-                                    marginRight: "10px"
-                                }}
-                                onClick={this.handleOpenDialogChangeData}
-                                startIcon={<EditIcon/>}>
-                                Edit profile</Button>
-                            <Dialog
-                                open={this.state.openDialogChangeData}
-                                onClose={this.handleCloseDialogChangeData}
-                                aria-labelledby="responsive-dialog-title"
-                            >
-                                <DialogTitle id="responsive-dialog-title">Change profile data</DialogTitle>
-                                <EditProfile handleClose={this.handleCloseDialogChangeData}
-                                             firstName={this.state.firstName}
-                                             lastName={this.state.lastName}
-                                             email={this.state.email}
-                                             password={this.state.password}
-                                             id={this.state.id}/>
-                            </Dialog>
-                            <Button
-                                align={"left"}
-                                variant="contained"
-                                color="primary"
-                                size="small"
-                                style={{
-                                    marginRight: "10px"
-                                }}
-                                onClick={this.handleOpenDialogAddBulletin}
-                                startIcon={<AddIcon/>}>
-                                Add bulletin</Button>
-                            <Dialog
-                                open={this.state.openDialogAddBulletin}
-                                onClose={this.handleCloseDialogAddBulletin}
-                                aria-labelledby="responsive-dialog-title"
-                            >
-                                <DialogTitle id="responsive-dialog-title">Add bulletin</DialogTitle>
-                                <CreateBulletin handleClose={this.handleCloseDialogAddBulletin}
-                                                firstName={this.state.firstName}
-                                                lastName={this.state.lastName}
-                                                email={this.state.email}
-                                                password={this.state.password}
-                                                id={this.state.id}/>
-                            </Dialog>
                         </CardContent>
-                        <Typography variant="h5" color="textSecondary" component="p">
-                            My bulletins
-                        </Typography>
-                        <AllBulletin bulletins={this.state.bulletins}
-                                     showAuthor={false}
-                                     activepage={this.state.activePage}
-                                     totalPages={this.state.totalPages}
-                                     itemsCountPerPage={this.state.itemsCountPerPage}
-                                     totalItemsCount={this.state.totalItemsCount}
-                                     handlePageChange={this.handlePageChange}
-                        />
+                        {this.state.bulletins && <div>
+                            <Typography
+                                variant="h5"
+                                component="p">
+                                Bulletins :
+                            </Typography>
+                            <AllBulletin bulletins={this.state.bulletins}
+                                         showAuthor={false}
+                                         activepage={this.state.activePage}
+                                         totalPages={this.state.totalPages}
+                                         itemsCountPerPage={this.state.itemsCountPerPage}
+                                         totalItemsCount={this.state.totalItemsCount}
+                                         handlePageChange={this.handlePageChange}
+                            />
+                        </div>}
 
                     </Card>
                 </Grid>

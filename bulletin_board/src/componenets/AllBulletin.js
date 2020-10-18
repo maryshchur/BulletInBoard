@@ -15,7 +15,7 @@ class AllBulletin extends Component {
                 <Grid item xs/>
                 <Grid container
                       justify="center">
-                    {this.props.bulletins.map((item) =>
+                     {this.props.bulletins.map((item) =>
                         (<BulletinItem key={item.id}
                                        item={item}
                                        showAuthor={this.props.showAuthor}/>)

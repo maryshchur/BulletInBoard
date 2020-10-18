@@ -23,10 +23,10 @@ const Header = (props) => {
 
     const classes = useStyles();
 
+    //TODO change using withRouting or smth like that
     let isProfilePage=window.location.pathname === "/profile";
 
     const openProfile = event => {
-        console.log(window.location.pathname);
         isProfilePage=true;
          window.location.href="/profile";
 
@@ -47,13 +47,15 @@ const Header = (props) => {
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
-                disabled={isProfilePage}
+                // disabled={isProfilePage}
                 onClick={openProfile}
                 color="inherit"
             >
                 <AccountCircle />
             </IconButton>
-            <Button color="inherit" disabled={!isProfilePage} onClick={openAllBulletins}>All Bulletins</Button>
+            <Button color="inherit"
+                    // disabled={!isProfilePage}
+                    onClick={openAllBulletins}>All Bulletins</Button>
             <Button color="inherit" onClick={logoutUser}>Logout</Button>
 
         </div>
@@ -76,13 +78,13 @@ const Header = (props) => {
 
     return (
         <div className={classes.root}>
-            <AppBar position="static" style={{ background: '#64b5f6' }}>
+            <AppBar position="static" style={{ background: '#2185f6' }}>
                 <Toolbar className={classes.title}>
                     {headerLinks}
                 </Toolbar>
             </AppBar>
         </div>
     );
-}
+};
 
 export default Header;

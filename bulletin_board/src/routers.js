@@ -16,7 +16,8 @@ class Routers extends Component {
                 <Switch>
                     <Route path="/" exact component={LoginForm} />
                     <Route path="/registration"  component={RegistrationForm} />
-                    <Route path="/profile"  component={ProfileForm} />
+                    <Route path="/profile" exact component={ProfileForm} />
+                    <Route path="/profile/:id"  component={ProfileForm} />
                     <Route path="/all-bulletin"  component={MainAllBulletinsPage} />
                 </Switch>
             </BrowserRouter>
