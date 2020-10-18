@@ -1,5 +1,6 @@
 package com.example.app.security;
 
+import com.example.app.dto.AuthenticationDetailsDto;
 import com.example.app.dto.LoginedUserDto;
 import com.example.app.entities.User;
 import com.example.app.exceptions.BadCredentialException;
@@ -27,7 +28,7 @@ public class AuthenticationService {
         this.webSecurityConfig = webSecurityConfig;
     }
 
-    public String loginUser(LoginedUserDto loginUser) {
+    public AuthenticationDetailsDto loginUser(LoginedUserDto loginUser) {
 
         Optional<User> user = userRepository.findUserByEmail(loginUser.getEmail());
         PasswordEncoder passwordEncoder = webSecurityConfig.passwordEncoder();
@@ -35,7 +36,7 @@ public class AuthenticationService {
                 user.orElseThrow(() ->
                         new BadCredentialException(String.format("User with %s email does not exist", loginUser.getEmail())))
                         .getPassword())) {
-            return tokenManagementService.generateTokenPair(loginUser.getEmail());
+            return new AuthenticationDetailsDto(tokenManagementService.generateTokenPair(loginUser.getEmail()),user.get().getId());
         } else {
             throw new BadCredentialException("Wrong password");
         }

@@ -1,5 +1,6 @@
 package com.example.app.controller;
 
+import com.example.app.dto.AuthenticationDetailsDto;
 import com.example.app.dto.LoginedUserDto;
 import com.example.app.dto.UserDto;
 import com.example.app.security.AuthenticationService;
@@ -42,10 +43,8 @@ public class UserController {
     }
 
     @PostMapping("/authentication")
-    public ResponseEntity<String> login(@RequestBody @Valid LoginedUserDto loginUser, HttpServletResponse response) {
-
-        String s = authenticationService.loginUser(loginUser);
-        return ResponseEntity.status(HttpStatus.OK).body(s);
+    public ResponseEntity<AuthenticationDetailsDto> login(@RequestBody @Valid LoginedUserDto loginUser, HttpServletResponse response) {
+        return ResponseEntity.status(HttpStatus.OK).body(authenticationService.loginUser(loginUser));
     }
 
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
