@@ -4,6 +4,7 @@ export const isUserLoggedIn = () => {
 };
 export const logout = () => {
     sessionStorage.removeItem('Authorization');
+    sessionStorage.removeItem('Id');
 };
 const LocalSessionStorageService = (function () {
     let _service;
@@ -20,18 +21,32 @@ const LocalSessionStorageService = (function () {
         sessionStorage.setItem('Authorization', accessToken);
     }
 
+    function _setId(id) {
+        sessionStorage.setItem('Id', id);
+    }
+
     function _getAccessToken() {
         return sessionStorage.getItem('Authorization');
+    }
+    function _getId() {
+        return sessionStorage.getItem('Id');
     }
 
     function _clearToken() {
         sessionStorage.removeItem('Authorization');
     }
 
+    function _clearId() {
+        sessionStorage.removeItem('Id');
+    }
+
     return {
         getService: _getService,
+        setId: _setId,
         setAccessToken: _setAccessToken,
+        getId: _getId,
         getAccessToken: _getAccessToken,
+        clearId: _clearId,
         clearToken: _clearToken
     }
 })();

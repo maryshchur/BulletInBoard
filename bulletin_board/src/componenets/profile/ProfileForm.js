@@ -13,13 +13,14 @@ import EditProfile from "./EditProfile";
 import Button from "@material-ui/core/Button";
 import AllBulletin from "../AllBulletin";
 import {matchPath} from "react-router";
-
+import LocalSessionStorageService from "../../services/LocalStorageService";
+const localStorageService = LocalSessionStorageService.getService();
 const style = {
     marginTop: 50,
     wight: 500
 };
 const itemsNumber = 2;
-let isMyProfilePage = window.location.pathname === "/profile";
+let isMyProfilePage = window.location.pathname === "/profile" ;
 let uriForGetBulletins;
 let uriForProfileData;
 let qqq = 1;
@@ -195,8 +196,8 @@ class ProfileForm extends Component {
                 </Dialog>
             </div>
         );
-        if (isMyProfilePage)
-            data = ifOwnProfile;
+        if (isMyProfilePage || localStorageService.getId() ==this.state.id){
+            data = ifOwnProfile;}
         else data = ifAnoutherUserProfile;
         return (
             <Grid container>

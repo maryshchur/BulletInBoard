@@ -25,7 +25,8 @@ class LoginForm extends Component {
 
     getData = () => {
         axios.post("/authentication", this.state).then(response => {
-                localStorageService.setAccessToken(response.data);
+                localStorageService.setAccessToken(response.data.token);
+            localStorageService.setId(response.data.id);
             window.location.href = "/all-bulletin";
         }, error => {
             this.setState({errorMessage: error.response.data.message});
