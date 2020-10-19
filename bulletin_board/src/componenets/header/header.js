@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
@@ -7,7 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {isUserLoggedIn, logout} from "../../services/LocalStorageService";
 
 const Header = (props) => {
@@ -24,17 +24,20 @@ const Header = (props) => {
     const classes = useStyles();
 
     //TODO change using withRouting or smth like that
-    let isProfilePage=window.location.pathname === "/profile";
+    let isProfilePage = window.location.pathname === "/profile";
 
     const openProfile = event => {
-        isProfilePage=true;
-         window.location.href="/profile";
+        isProfilePage = true;
+        window.location.href = "/profile";
 
     };
-    const openAllBulletins= event => {
-        window.location.href="/all-bulletin";
-        isProfilePage=false;
+    const openAllBulletins = event => {
+        window.location.href = "/all-bulletin";
+        isProfilePage = false;
     };
+    const openHome = event => {
+
+    }
     const logoutUser = () => {
         logout();
         window.location.href = "/";
@@ -43,19 +46,25 @@ const Header = (props) => {
 
     const userLoggedIn = (
         <div>
-            <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                // disabled={isProfilePage}
-                onClick={openProfile}
-                color="inherit"
-            >
-                <AccountCircle />
-            </IconButton>
-            <Button color="inherit"
-                    // disabled={!isProfilePage}
-                    onClick={openAllBulletins}>All Bulletins</Button>
+            <Link to={"/profile"}>
+                <IconButton
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    // disabled={isProfilePage}
+                    onClick={openProfile}
+                    color="inherit" style={{color: '#FFF'}}
+                >
+                    <AccountCircle/>
+                </IconButton></Link>
+            <Link to={"/all-bulletin"}><Button color="inherit" style={{color: '#FFF'}}
+                // disabled={!isProfilePage}
+            >All Bulletins</Button>
+            </Link>
+            <Link to={"/home"}><Button color="inherit" style={{color: '#FFF'}}
+                // disabled={!isProfilePage}
+            >Home</Button>
+            </Link>
             <Button color="inherit" onClick={logoutUser}>Logout</Button>
 
         </div>
@@ -63,8 +72,8 @@ const Header = (props) => {
 
     const userNotLoggedIn = (
         <div>
-            <Link to="/"><Button style={{ color: '#FFF' }}>Sign In</Button></Link>
-            <Link to="/registration"><Button style={{ color: '#FFF' }}>Sign Up</Button></Link>
+            <Link to="/"><Button style={{color: '#FFF'}}>Sign In</Button></Link>
+            <Link to="/registration"><Button style={{color: '#FFF'}}>Sign Up</Button></Link>
         </div>
     );
 
@@ -78,7 +87,7 @@ const Header = (props) => {
 
     return (
         <div className={classes.root}>
-            <AppBar position="static" style={{ background: '#2185f6' }}>
+            <AppBar position="static" style={{background: '#2185f6'}}>
                 <Toolbar className={classes.title}>
                     {headerLinks}
                 </Toolbar>

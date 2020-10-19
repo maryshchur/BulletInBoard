@@ -29,6 +29,7 @@ class MainAllBulletinsPage extends Component {
             }
         )
     };
+
     handlePageChange = (event, pageNumber) => {
         this.setState({activePage: pageNumber});
         this.getAllBulletins(pageNumber)
@@ -42,7 +43,7 @@ class MainAllBulletinsPage extends Component {
         return (
             <Grid style={{marginTop: 10}}>
                 <AllBulletin bulletins={this.state.bulletins}
-                             showAuthor={true}
+                             isNotUserPage={true}
                              activepage={this.state.activePage}
                              totalPages={this.state.totalPages}
                              itemsCountPerPage={this.state.itemsCountPerPage}

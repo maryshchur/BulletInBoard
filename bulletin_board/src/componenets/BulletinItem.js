@@ -4,31 +4,21 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import ProfileForm from "./profile/ProfileForm";
 import Link from "@material-ui/core/Link";
+import DeleteIcon from "@material-ui/icons/Delete";
+import axios from "../utils/axios";
+import LocalSessionStorageService from "../services/LocalStorageService";
+const localStorageService = LocalSessionStorageService.getService();
 
 class BulletinItem extends Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            showModal: false
-        };
-        this.handleClick = this.handleClick.bind(this);
-    };
-
-    handleClick = (event) => {
-        console.log(this.state.showModal);
-        console.log("CLICK");
-        this.setState({
-            showModal: !this.state.showModal
+    delete = () => {
+        axios.delete(`/bulletin/${this.props.item.id}`).then(
+            response => {
+            }).catch(error => {
         });
     };
 
     render() {
-        const aa = (
-            <ProfileForm data={this.props.item}/>
-        );
         return (
             <Card>
                 <CardContent>
@@ -44,18 +34,29 @@ class BulletinItem extends Component {
                     </Typography>
                     <Typography>
                         Added at {this.props.item.addedDate}
+
                     </Typography>
-                    {this.props.showAuthor &&
+                    {this.props.item.user.id==localStorageService.getId() && !this.props.isNotUserPage
+                    && <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        style={{
+                            marginLeft: "10px"
+                        }}
+                        startIcon={<DeleteIcon/>}
+                        onClick={this.delete}
+                    />
+                    }
+                    {this.props.isNotUserPage &&
                     <Typography>
-                        {/* eslint-disable-next-line react/jsx-no-undef */}
                         <Link href={`/profile/${this.props.item.user.id}`}>
                             <Button variant="contained"
-                                    color="primary" >
+                                    color="primary">
                                 Author :
                                 {this.props.item.user.firstName} {this.props.item.user.lastName}
                             </Button>
                         </Link>
-                       {/*{this.state.showModal && <ProfileForm data={this.props.item}/>}*/}
                     </Typography>}
                 </CardContent>
             </Card>

@@ -48,6 +48,7 @@ class ProfileForm extends Component {
         totalItemsCount: 1,
         totalPages: 0,
         itemsCountPerPage: 0,
+        isCurrentUserSubscriber:false
     };
 
     getData = () => {
@@ -63,6 +64,7 @@ class ProfileForm extends Component {
                     password: data.password,
                     amountOfSubscribers: data.amountOfSubscribers,
                     amountOfSubscriptions: data.amountOfSubscriptions,
+                    isCurrentUserSubscriber: data.currentUserSubscriber
                 })
             }).catch(error => {
             console.dir(error.response);
@@ -129,6 +131,9 @@ class ProfileForm extends Component {
 
     render() {
         let data;
+        let data2;
+        if (this.state.isCurrentUserSubscriber) data2="Unsubscribe";
+        else data2="Subscribe";
         const ifAnoutherUserProfile = (
             <div>
                 <Button
@@ -141,7 +146,8 @@ class ProfileForm extends Component {
                     }}
                     onClick={this.subscribe}
                 >
-                    Subscribe</Button>
+                    {data2}
+                </Button>
             </div>
         );
         const ifOwnProfile = (
@@ -245,7 +251,7 @@ class ProfileForm extends Component {
                                 Bulletins :
                             </Typography>
                             <AllBulletin bulletins={this.state.bulletins}
-                                         showAuthor={false}
+                                         isNotUserPage={false}
                                          activepage={this.state.activePage}
                                          totalPages={this.state.totalPages}
                                          itemsCountPerPage={this.state.itemsCountPerPage}
