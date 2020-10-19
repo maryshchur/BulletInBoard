@@ -18,6 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 import static com.example.app.util.Pagination.validatePage;
 import static com.example.app.util.Pagination.validatePageSize;
 
@@ -75,20 +79,29 @@ public class BulletinServiceImpl implements BulletinService {
     }
 
     @Override
-    public Page<BulletinDto> getAllByUser(Integer page, Integer pageSize,String email){
+    public Page<BulletinDto> getAllByUser(Integer page, Integer pageSize, String email) {
         Pageable pageable = PageRequest.of(validatePage(page), validatePageSize(pageSize), Sort.Direction.DESC, "id");
         User user = userRepository.findUserByEmail(email).get();
-        return bulletinRepository.findAllByUser(pageable,user)
+        return bulletinRepository.findAllByUser(pageable, user)
                 .map(bulletin -> modelMapper.map(bulletin, BulletinDto.class));
     }
 
     @Override
-    public Page<BulletinDto> getAllByUserId(Long id,Integer page, Integer pageSize){
+    public Page<BulletinDto> getAllByUserId(Long id, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(validatePage(page), validatePageSize(pageSize), Sort.Direction.DESC, "id");
         User user = userRepository.findUserById(id).get();
-        return bulletinRepository.findAllByUser(pageable,user)
+        return bulletinRepository.findAllByUser(pageable, user)
                 .map(bulletin -> modelMapper.map(bulletin, BulletinDto.class));
-    };
+    }
+
+    @Override
+    public List<BulletinDto> getAllSubscriptionsBulletin(String username) {
+        List<Bulletin> list = new ArrayList<>();
+        userRepository.findUserByEmail(username).get().getSubscriptions().stream().forEach(x-> bulletinRepository.findAllByUser(x)
+                .stream().forEach(xx->list.add(xx)));
+        return list.stream().sorted(Comparator.comparing(Bulletin::getAddedDate))
+               .map(x->modelMapper.map(x,BulletinDto.class)).collect(Collectors.toList());
+    }
 
     @Override
     public void delete(Long id) {

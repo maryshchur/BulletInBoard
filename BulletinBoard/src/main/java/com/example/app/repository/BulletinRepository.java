@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface BulletinRepository extends PagingAndSortingRepository<Bulletin, Long> {
@@ -18,7 +20,7 @@ public interface BulletinRepository extends PagingAndSortingRepository<Bulletin,
 
     @Override
     Page<Bulletin> findAll(Pageable pageable);
-
+    List<Bulletin> findAllByUser(User user);
     Page<Bulletin> findAllByUser(Pageable pageable, User user);
 
     @Override

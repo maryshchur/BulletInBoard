@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -58,7 +59,7 @@ public class BulletinController {
     }
 
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
-    @DeleteMapping("/{id}/")
+    @DeleteMapping("/bulletin/{id}")
     public ResponseEntity deleteBulletin(@PathVariable Long id) {
         bulletinService.delete(id);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -78,6 +79,16 @@ public class BulletinController {
     public ResponseEntity<Page<BulletinDto>> getAllUserBulletinsById(@PathVariable Long id, @RequestParam Optional<Integer> page,
                                                                      @RequestParam Optional<Integer> pageSize) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(bulletinService.getAllByUserId(id,page.orElseGet(() -> 1), pageSize.orElseGet(() -> 10)));
+                .body(bulletinService.getAllByUserId(id, page.orElseGet(() -> 1), pageSize.orElseGet(() -> 10)));
     }
+
+    @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
+    @GetMapping("/profile/news")
+    public ResponseEntity<List<BulletinDto>> getAllSubscriptionsBulletin(@ApiIgnore @AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(bulletinService.getAllSubscriptionsBulletin(principal.getUsername()));
+
+
+    }
+
 }
