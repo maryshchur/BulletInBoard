@@ -1,9 +1,6 @@
 package com.example.app.controller;
 
-import com.example.app.dto.AnotherUserProfileDto;
-import com.example.app.dto.AuthenticationDetailsDto;
-import com.example.app.dto.LoginedUserDto;
-import com.example.app.dto.UserDto;
+import com.example.app.dto.*;
 import com.example.app.security.AuthenticationService;
 import com.example.app.security.UserPrincipal;
 import com.example.app.service.UserService;
@@ -19,6 +16,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -32,7 +30,7 @@ public class UserController {
     @Autowired
     public UserController(UserService userService,
                           AuthenticationService authenticationService
-                          ) {
+    ) {
         this.userService = userService;
         this.authenticationService = authenticationService;
     }
@@ -50,7 +48,7 @@ public class UserController {
 
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @PutMapping("/profile/{id}")
-    public ResponseEntity update(@PathVariable Long id,  @RequestBody UserDto userDto){
+    public ResponseEntity update(@PathVariable Long id, @RequestBody UserDto userDto) {
         userService.update(id, userDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -71,9 +69,9 @@ public class UserController {
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @PutMapping("/profile/subscribe/{userId}")
     public ResponseEntity changeSubscription(@AuthenticationPrincipal @ApiIgnore UserPrincipal principal,
-                                    @PathVariable Long userId){
-        if(!principal.getUser().getId().equals(userId)){
-            userService.subscribe(principal.getUsername(),userId);
+                                             @PathVariable Long userId) {
+        if (!principal.getUser().getId().equals(userId)) {
+            userService.subscribe(principal.getUsername(), userId);
         }
         return ResponseEntity.status(HttpStatus.OK).build();
 
@@ -82,13 +80,14 @@ public class UserController {
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @GetMapping("/profile/subscribers/{id}")
     public ResponseEntity<Set<UserDto>> getSubscribers(@AuthenticationPrincipal @ApiIgnore UserPrincipal principal,
-                                                           @PathVariable Long id){
+                                                       @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getSubscribers(id));
     }
+
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @GetMapping("/profile/subscription/{id}")
     public ResponseEntity<Set<UserDto>> getSubscriptions(@AuthenticationPrincipal @ApiIgnore UserPrincipal principal,
-                                             @PathVariable Long id){
+                                                         @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getSubscriptions(id));
 
     }
@@ -96,14 +95,24 @@ public class UserController {
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @GetMapping("/profile/subscribers")
     public ResponseEntity<Set<UserDto>> getSubscribersForCurrentUser(@AuthenticationPrincipal @ApiIgnore UserPrincipal principal
-                                                    ){
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getSubscribers(principal.getUser().getId()));
     }
+
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @GetMapping("/profile/subscription ")
     public ResponseEntity<Set<UserDto>> getSubscriptionsForCurrentUser(@AuthenticationPrincipal @ApiIgnore UserPrincipal principal
-                                                        ){
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getSubscriptions(principal.getUser().getId()));
+
+    }
+
+    @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
+    @PutMapping("/bulletin/{id}")
+    public ResponseEntity likeBulletin(@ApiIgnore @AuthenticationPrincipal UserPrincipal principal,
+                                                          @PathVariable Long id) {
+        userService.likeBulletin(principal.getUsername(),id);
+        return ResponseEntity.status(HttpStatus.OK).build();
 
     }
 }

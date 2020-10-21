@@ -1,17 +1,23 @@
 package com.example.app.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.time.LocalDateTime;
+
 @Data
-public class BulletinDto {
+@EqualsAndHashCode(callSuper = true)
+public class BulletinDto
+        extends CreateBulletinDto
+{
+
     private Long id;
-    private String title;
 
     private String image;
-
-    private String description;
 
     private LocalDateTime addedDate;
 
     private UserInfoDto user;
+
+    private int amountOfLikes;
 }

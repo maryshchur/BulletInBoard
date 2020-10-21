@@ -4,9 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -15,8 +13,8 @@ import java.util.Set;
 @DynamicUpdate
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"subscribers", "subscriptions"})
-@ToString(exclude = {"subscribers", "subscriptions","password"})
+@EqualsAndHashCode(exclude = {"subscribers", "subscriptions", "likedBulletins"})
+@ToString(exclude = {"subscribers", "subscriptions", "password", "likedBulletins"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +40,17 @@ public class User {
     )
     private Set<User> subscribers = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY,mappedBy = "subscribers")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "subscribers")
     private Set<User> subscriptions = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable
+            (
+            name = "liked_bulletins",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "bulletin_id", referencedColumnName = "id")}
+    )
+    private Set<Bulletin> likedBulletins = new HashSet<>();
+
 
 }

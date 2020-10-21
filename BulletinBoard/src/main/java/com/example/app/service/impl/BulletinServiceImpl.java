@@ -1,6 +1,8 @@
 package com.example.app.service.impl;
 
+import com.example.app.dto.AnotherUserBulletinsDto;
 import com.example.app.dto.BulletinDto;
+import com.example.app.dto.CreateBulletinDto;
 import com.example.app.entities.Bulletin;
 import com.example.app.entities.User;
 import com.example.app.exceptions.NotFoundException;
@@ -14,12 +16,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static com.example.app.util.Pagination.validatePage;
@@ -44,8 +47,8 @@ public class BulletinServiceImpl implements BulletinService {
     }
 
     @Override
-    public Long save(String userEmail, BulletinDto bulletinDto) {
-        Bulletin bulletin = modelMapper.map(bulletinDto, Bulletin.class);
+    public Long save(String userEmail, CreateBulletinDto createBulletinDto) {
+        Bulletin bulletin = modelMapper.map(createBulletinDto, Bulletin.class);
         bulletin.setAddedDate(java.time.LocalDateTime.now());
         bulletin.setUser(userRepository.findUserByEmail(userEmail).get());
         return bulletinRepository.save(bulletin).getId();
@@ -67,15 +70,19 @@ public class BulletinServiceImpl implements BulletinService {
 
 
     @Override
-    public Page<BulletinDto> getAll(Integer page, Integer pageSize) {
+    public Page<AnotherUserBulletinsDto> getAll(Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(validatePage(page), validatePageSize(pageSize), Sort.Direction.DESC, "id");
         return bulletinRepository.findAll(pageable)
-                .map(bulletin -> modelMapper.map(bulletin, BulletinDto.class));
+                .map(bulletin -> modelMapper.map(bulletin, AnotherUserBulletinsDto.class));
     }
+//    private boolean isBulletinLikedByCurrentUser(Bulletin bulletin){
+//        Principal principal = SecurityContextHolder.getContext().getAuthentication();
+//        return bulletin.getLikes().contains(userRepository.findUserByEmail(principal.getName()).get());
+//    }
 
     @Override
-    public BulletinDto getById(Long id) {
-        return modelMapper.map(findById(id), BulletinDto.class);
+    public AnotherUserBulletinsDto getById(Long id) {
+        return modelMapper.map(findById(id), AnotherUserBulletinsDto.class);
     }
 
     @Override
@@ -87,20 +94,20 @@ public class BulletinServiceImpl implements BulletinService {
     }
 
     @Override
-    public Page<BulletinDto> getAllByUserId(Long id, Integer page, Integer pageSize) {
+    public Page<AnotherUserBulletinsDto> getAllByUserId(Long id, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(validatePage(page), validatePageSize(pageSize), Sort.Direction.DESC, "id");
         User user = userRepository.findUserById(id).get();
         return bulletinRepository.findAllByUser(pageable, user)
-                .map(bulletin -> modelMapper.map(bulletin, BulletinDto.class));
+                .map(bulletin -> modelMapper.map(bulletin, AnotherUserBulletinsDto.class));
     }
 
     @Override
-    public List<BulletinDto> getAllSubscriptionsBulletin(String username) {
+    public List<AnotherUserBulletinsDto> getAllSubscriptionsBulletin(String username) {
         List<Bulletin> list = new ArrayList<>();
         userRepository.findUserByEmail(username).get().getSubscriptions().stream().forEach(x-> bulletinRepository.findAllByUser(x)
                 .stream().forEach(xx->list.add(xx)));
         return list.stream().sorted(Comparator.comparing(Bulletin::getAddedDate))
-               .map(x->modelMapper.map(x,BulletinDto.class)).collect(Collectors.toList());
+               .map(x->modelMapper.map(x, AnotherUserBulletinsDto.class)).collect(Collectors.toList());
     }
 
     @Override

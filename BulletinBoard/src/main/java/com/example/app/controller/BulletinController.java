@@ -1,6 +1,8 @@
 package com.example.app.controller;
 
+import com.example.app.dto.AnotherUserBulletinsDto;
 import com.example.app.dto.BulletinDto;
+import com.example.app.dto.CreateBulletinDto;
 import com.example.app.security.UserPrincipal;
 import com.example.app.service.BulletinService;
 import io.swagger.annotations.ApiOperation;
@@ -30,23 +32,23 @@ public class BulletinController {
 
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @PostMapping("/create-bulletin")
-    public ResponseEntity<Long> createAnnouncement(@Valid @RequestBody BulletinDto bulletinDto,
+    public ResponseEntity<Long> createAnnouncement(@Valid @RequestBody CreateBulletinDto createBulletinDto,
                                                    @ApiIgnore @AuthenticationPrincipal UserPrincipal principal) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(bulletinService.save(principal.getUsername(), bulletinDto));
+                .body(bulletinService.save(principal.getUsername(), createBulletinDto));
     }
 
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @GetMapping("/bulletins")
-    public ResponseEntity<Page<BulletinDto>> getAllBulletins(@RequestParam Optional<Integer> page,
-                                                             @RequestParam Optional<Integer> pageSize) {
+    public ResponseEntity<Page<AnotherUserBulletinsDto>> getAllBulletins(@RequestParam Optional<Integer> page,
+                                                                   @RequestParam Optional<Integer> pageSize) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(bulletinService.getAll(page.orElseGet(() -> 1), pageSize.orElseGet(() -> 10)));
     }
 
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @GetMapping("/{id}/bulletin")
-    public ResponseEntity<BulletinDto> getBulletinById(@PathVariable Long id) {
+    public ResponseEntity<AnotherUserBulletinsDto> getBulletinById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(bulletinService.getById(id));
     }
 
@@ -76,19 +78,20 @@ public class BulletinController {
 
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @GetMapping("{id}/profile")
-    public ResponseEntity<Page<BulletinDto>> getAllUserBulletinsById(@PathVariable Long id, @RequestParam Optional<Integer> page,
-                                                                     @RequestParam Optional<Integer> pageSize) {
+    public ResponseEntity<Page<AnotherUserBulletinsDto>> getAllUserBulletinsByUserId(@PathVariable Long id, @RequestParam Optional<Integer> page,
+                                                                           @RequestParam Optional<Integer> pageSize) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(bulletinService.getAllByUserId(id, page.orElseGet(() -> 1), pageSize.orElseGet(() -> 10)));
     }
 
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @GetMapping("/profile/news")
-    public ResponseEntity<List<BulletinDto>> getAllSubscriptionsBulletin(@ApiIgnore @AuthenticationPrincipal UserPrincipal principal) {
+    public ResponseEntity<List<AnotherUserBulletinsDto>> getAllSubscriptionsBulletin(@ApiIgnore @AuthenticationPrincipal UserPrincipal principal) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(bulletinService.getAllSubscriptionsBulletin(principal.getUsername()));
 
 
     }
+
 
 }

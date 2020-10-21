@@ -13,4 +13,6 @@ public interface UserService {
     void subscribe(String subscriberEmail,Long userToSubscribeId);
     Set<UserDto> getSubscribers(Long id);
     Set<UserDto> getSubscriptions(Long id);
+
+    void likeBulletin(String username, Long id);
 }

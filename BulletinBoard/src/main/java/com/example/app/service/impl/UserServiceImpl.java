@@ -6,6 +6,7 @@ import com.example.app.entities.Bulletin;
 import com.example.app.entities.User;
 import com.example.app.exceptions.NotFoundException;
 import com.example.app.exceptions.NotSavedException;
+import com.example.app.repository.BulletinRepository;
 import com.example.app.repository.UserRepository;
 import com.example.app.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -23,13 +24,16 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private ModelMapper modelMapper;
+    private BulletinRepository bulletinRepository;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
-                           PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
+                           PasswordEncoder passwordEncoder, ModelMapper modelMapper,
+                           BulletinRepository bulletinRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;
+        this.bulletinRepository=bulletinRepository;
     }
 
     @Override
@@ -63,17 +67,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public AnotherUserProfileDto getAnotherUser(Long id) {
         User user = findById(id);
-        AnotherUserProfileDto profileDto = modelMapper.map(user,AnotherUserProfileDto.class);
-        profileDto.setCurrentUserSubscriber(isAlreadySubscribed(user));
-        return profileDto;
+        return modelMapper.map(user,AnotherUserProfileDto.class);
     }
 
-    private boolean isAlreadySubscribed(User user){
-        Principal principal = SecurityContextHolder.getContext().getAuthentication();
-        if (user.getSubscribers().contains(findByEmail(principal.getName()))){
-            return true;
-        } else return false;
-    }
 
     private User findByEmail(String email) {
         return userRepository.findUserByEmail(email).
@@ -110,6 +106,21 @@ public class UserServiceImpl implements UserService {
         return findById(id).getSubscriptions().stream()
                 .map(x->modelMapper.map(x,UserDto.class))
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public void likeBulletin(String username, Long id) {
+        User user= findByEmail(username);
+        Bulletin bulletin=bulletinRepository.findById(id).get();
+        Set<Bulletin> allLikedBulletins=user.getLikedBulletins();
+        if(allLikedBulletins.contains(bulletin)){
+            allLikedBulletins.remove(bulletin);
+            bulletin.getLikes().remove(user);
+        } else{
+            allLikedBulletins.add(bulletin);
+            bulletin.getLikes().add(user);
+        }
+        userRepository.save(user);
     }
 
 }

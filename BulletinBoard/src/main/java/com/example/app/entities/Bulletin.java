@@ -1,13 +1,13 @@
 package com.example.app.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table
@@ -33,4 +33,10 @@ public class Bulletin {
 
     @ManyToOne(fetch = FetchType.EAGER)
     private User user;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "likedBulletins")
+    private Set<User> likes
+            = new HashSet<>();
 }
