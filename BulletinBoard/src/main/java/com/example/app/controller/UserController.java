@@ -4,6 +4,8 @@ import com.example.app.dto.*;
 import com.example.app.security.AuthenticationService;
 import com.example.app.security.UserPrincipal;
 import com.example.app.service.UserService;
+import com.example.app.util.validation.IsCurrentUserBulletin;
+import com.example.app.util.validation.isCurrentUser;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +71,7 @@ public class UserController {
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @PutMapping("/profile/subscribe/{userId}")
     public ResponseEntity changeSubscription(@AuthenticationPrincipal @ApiIgnore UserPrincipal principal,
-                                             @PathVariable Long userId) {
+                                             @PathVariable @isCurrentUser Long userId) {
         if (!principal.getUser().getId().equals(userId)) {
             userService.subscribe(principal.getUsername(), userId);
         }
@@ -110,7 +112,7 @@ public class UserController {
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @PutMapping("/bulletin/{id}")
     public ResponseEntity likeBulletin(@ApiIgnore @AuthenticationPrincipal UserPrincipal principal,
-                                                          @PathVariable Long id) {
+                                                          @PathVariable  @IsCurrentUserBulletin Long id) {
         userService.likeBulletin(principal.getUsername(),id);
         return ResponseEntity.status(HttpStatus.OK).build();
 
