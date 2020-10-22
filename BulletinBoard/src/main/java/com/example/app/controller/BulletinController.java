@@ -92,6 +92,14 @@ public class BulletinController {
 
 
     }
+    @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
+    @GetMapping("/profile/liked")
+    public ResponseEntity<List<BulletinDto>> getAllLikedBulletin(@ApiIgnore @AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(bulletinService.getAllLikedBulletin(principal.getUsername()));
+
+
+    }
 
 
 }

@@ -60,8 +60,10 @@ public class FileStorageServiceImpl implements FileStorageService {
     public String uploadFile(MultipartFile multipartFile){
         String fileName = "";
         try {
+            File file = convertMultipartToFile(multipartFile);
             fileName = generateFileName();
-            uploadFileToS3(fileName, convertMultipartToFile(multipartFile));
+            uploadFileToS3(fileName, file);
+            file.delete();
         } catch (IOException e) {
             e.printStackTrace();
         }

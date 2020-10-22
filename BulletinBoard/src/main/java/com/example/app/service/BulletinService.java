@@ -24,4 +24,7 @@ public interface BulletinService {
     Page<AnotherUserBulletinsDto> getAllByUserId(Long id, Integer page, Integer pageSize);
 
     List<AnotherUserBulletinsDto> getAllSubscriptionsBulletin(String username);
+
+    List<BulletinDto> getAllLikedBulletin(String username);
 }
+

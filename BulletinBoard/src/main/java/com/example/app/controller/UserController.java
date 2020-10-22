@@ -48,6 +48,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(authenticationService.loginUser(loginUser));
     }
 
+    //TODO here should be DTo with only firstName and lastName
+    //TODO create possibility to change email separately(with redirection to login)
+    //TODO create possibility to change password separately with entering current password
     @ApiOperation(value = "", authorizations = {@Authorization(value = "JWT")})
     @PutMapping("/profile/{id}")
     public ResponseEntity update(@PathVariable Long id, @RequestBody UserDto userDto) {

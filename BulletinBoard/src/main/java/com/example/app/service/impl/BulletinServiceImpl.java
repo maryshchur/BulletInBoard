@@ -111,9 +111,17 @@ public class BulletinServiceImpl implements BulletinService {
     }
 
     @Override
+    public List<BulletinDto> getAllLikedBulletin(String username) {
+        return userRepository.findUserByEmail(username).get()
+                .getLikedBulletins().stream().map(x->modelMapper.map(x, BulletinDto.class)).collect(Collectors.toList());
+    }
+
+    @Override
     public void delete(Long id) {
         Bulletin bulletin = findById(id);
         fileStorageService.deleteFile(bulletin.getImage());
         bulletinRepository.deleteById(id);
     }
+
+
 }
