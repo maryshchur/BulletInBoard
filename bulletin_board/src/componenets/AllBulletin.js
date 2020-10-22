@@ -18,6 +18,7 @@ class AllBulletin extends Component {
                     {this.props.bulletins.map((item) =>
                         (<BulletinItem key={item.id}
                                        item={item}
+                                       getAllBulletins={this.props.getAllBulletins}
                                        isNotUserPage={this.props.isNotUserPage}/>)
                     )}
                     <Grid container

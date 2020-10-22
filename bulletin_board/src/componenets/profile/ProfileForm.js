@@ -121,6 +121,7 @@ class ProfileForm extends Component {
     };
     handleCloseDialogAddBulletin = () => {
         this.setState({openDialogAddBulletin: false});
+        this.getAllUserBulletins(this.state.activePage);
     };
     subscribe = () => {
         axios.put(`/profile/subscribe/${this.state.id}`).then(response => {
@@ -252,6 +253,7 @@ class ProfileForm extends Component {
                             </Typography>
                             <AllBulletin bulletins={this.state.bulletins}
                                          isNotUserPage={false}
+                                         getAllBulletins={()=>this.getAllUserBulletins(this.state.activePage)}
                                          activepage={this.state.activePage}
                                          totalPages={this.state.totalPages}
                                          itemsCountPerPage={this.state.itemsCountPerPage}

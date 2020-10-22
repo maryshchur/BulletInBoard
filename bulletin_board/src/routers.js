@@ -7,6 +7,7 @@ import Header from "./componenets/header/header";
 import ProfileForm from "./componenets/profile/ProfileForm";
 import MainAllBulletinsPage from "./componenets/MainAllBulletinsPage";
 import HomePage from "./componenets/HomePage";
+import LikedBulletinsPage from "./componenets/LikedBulletinsPage";
 
 class Routers extends Component {
 
@@ -19,7 +20,8 @@ class Routers extends Component {
                     <Route path="/registration"  component={RegistrationForm} />
                     <Route path="/profile" exact component={ProfileForm} />
                     <Route path="/profile/:id"  component={ProfileForm} />
-                    <Route path="/home"  component={HomePage} />
+                    <Route path="/home"  exact component={HomePage} />
+                    <Route path="/home/liked-bulletins"  component={LikedBulletinsPage} />
                     <Route path="/all-bulletin"  component={MainAllBulletinsPage} />
                 </Switch>
             </BrowserRouter>

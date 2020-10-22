@@ -18,6 +18,9 @@ class EditProfile extends Component {
         errorMessages: {}
     };
 
+    //TODO here should be only firstName and lastName
+    //TODO create possibility to change email separately(with redirection to login)
+    //TODO create possibility to change password separately with entering current password
     editData=()=>{
         let data = {};
         data.firstName = this.state.firstName;

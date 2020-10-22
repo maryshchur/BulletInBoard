@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import {Link} from 'react-router-dom';
 import {isUserLoggedIn, logout} from "../../services/LocalStorageService";
@@ -42,10 +43,40 @@ const Header = (props) => {
         logout();
         window.location.href = "/";
     };
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     const userLoggedIn = (
         <div>
+            {/* eslint-disable-next-line react/jsx-no-undef */}
+            <IconButton
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleClick}
+                color="inherit"
+            >
+                {/* eslint-disable-next-line react/jsx-no-undef */}
+                <MenuIcon/>
+            </IconButton>
+            <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                <MenuItem ><Link to={"/home"}>Home</Link></MenuItem>
+                <MenuItem > <Link to={"/all-bulletin"}>All Bulletins</Link></MenuItem>
+                <MenuItem ><Link to={"/home/liked-bulletins"}>Liked Bulletins</Link></MenuItem>
+            </Menu>
             <Link to={"/profile"}>
                 <IconButton
                     aria-label="account of current user"
@@ -57,14 +88,16 @@ const Header = (props) => {
                 >
                     <AccountCircle/>
                 </IconButton></Link>
-            <Link to={"/all-bulletin"}><Button color="inherit" style={{color: '#FFF'}}
-                // disabled={!isProfilePage}
-            >All Bulletins</Button>
-            </Link>
+            {/*<Link to={"/all-bulletin"}><Button color="inherit" style={{color: '#FFF'}}*/}
+            {/*    // disabled={!isProfilePage}*/}
+            {/*>All Bulletins</Button>*/}
+            {/*</Link>*/}
+
             <Link to={"/home"}><Button color="inherit" style={{color: '#FFF'}}
                 // disabled={!isProfilePage}
             >Home</Button>
             </Link>
+
             <Button color="inherit" onClick={logoutUser}>Logout</Button>
 
         </div>

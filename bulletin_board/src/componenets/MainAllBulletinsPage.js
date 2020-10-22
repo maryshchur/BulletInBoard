@@ -44,6 +44,7 @@ class MainAllBulletinsPage extends Component {
             <Grid style={{marginTop: 10}}>
                 <AllBulletin bulletins={this.state.bulletins}
                              isNotUserPage={true}
+                              getAllBulletins={() => this.getAllBulletins(this.state.activePage)}
                              activepage={this.state.activePage}
                              totalPages={this.state.totalPages}
                              itemsCountPerPage={this.state.itemsCountPerPage}
