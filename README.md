@@ -1,1 +1,2 @@
 # BulletInBoard
+BulletInBoard is a system for placing different announcements. You should register to make a bulletin. There is a possibility to subscribe to different users so you can filter announcements by subscription and by tyour liked bulletins. Bulletin images are saved on AWS S3. Every entered data is validated both on front-end and back-end side. And all this is in a simple and user-friendly interface.
